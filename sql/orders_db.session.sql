@@ -12,3 +12,4 @@ CREATE TABLE orders(
 );
 
 SELECT * FROM users INNER JOIN orders on users.user_id=orders.user_id
+
