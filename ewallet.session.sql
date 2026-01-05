@@ -52,8 +52,8 @@ INSERT INTO transactions(from_acc_id,to_acc_id,amount)
 VALUES(1,2,500)
 
 //total money sent
-
-SELECT a.acc_name,SUM()
+INSERT INTO transactions(from_acc_id,to_acc_id,amount)
+VALUES(1,2,0)//failed query 
 
 
 

@@ -19,6 +19,26 @@
             "name": "ewallet",
             "username": "postgres",
             "database": "ewallet"
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "orders",
+            "database": "orders",
+            "username": "postgres"
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "localhost",
+            "port": 5432,
+            "driver": "PostgreSQL",
+            "name": "index",
+            "database": "index",
+            "username": "postgres"
         }
     ]
 }
