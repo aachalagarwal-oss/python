@@ -25,3 +25,9 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 
 
 
+def get_db():
+    db=SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
