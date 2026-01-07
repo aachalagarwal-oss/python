@@ -11,3 +11,8 @@ venv/
 # OS
 .DS_Store
 
+__pycache__/
+*.pyc
+venv/
+fastapi_project/venv/
+
