@@ -3,6 +3,8 @@ from . import schemas
 from . import models
 from Blog.database import engine,SessionLocal
 from sqlalchemy.orm import Session
+from passlib.context import CryptContext
+#dependency for hashing
 app=FastAPI()
 
 models.Base.metadata.create_all(bind=engine)
@@ -15,15 +17,24 @@ def get_db():
     finally:
         db.close()
 
-@app.post('/blog',status_code=status.HTTP_200_OK)
+
+
+
+#hashing
+
+pwd_cxt=CryptContext(schemes=["bcrypt"],deprecated="auto")
+
+
+
+@app.post('/blog',status_code=status.HTTP_200_OK,tags=['blogs'])
 def create(request:schemas.Blog,db:Session=Depends(get_db)):
-    new_blog=models.Blog(title=request.title,body=request.body)
+    new_blog=models.Blog(title=request.title,body=request.body,user_id=request.user_id)
     db.add(new_blog)
     db.commit()
     db.refresh(new_blog)
     return new_blog
 
-@app.get('/blog')
+@app.get('/blog',tags=['blogs'])
 def all(db:Session=Depends(get_db)):
     blogs=db.query(models.Blog).all()
     return blogs
@@ -35,17 +46,20 @@ def all(db:Session=Depends(get_db)):
 
 # to get dynamic values
 
-@app.get('/blog/{id}',status_code=200)
-def show(id,response:Response,db:Session=Depends(get_db)):
-    blog=db.query(models.Blog).where(models.Blog.id==id).first()
-    if not blog:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,detail=f"Blog with the id{id} is not available")
-        # response.status_code=status.HTTP_404_NOT_FOUND
-        # return{'detail':f"Blog with the id{id} is not available"}
+@app.get('/blog/{id}', response_model=schemas.showBlog,tags=['blogs'])
+def show(id: int, db: Session = Depends(get_db)):
+    blog = db.query(models.Blog).filter(models.Blog.id == id).first()
+
+    if blog is None:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Blog with id {id} not found"
+        )
+
     return blog
+#how to just get title and body
 
-
-@app.delete('/blog')
+@app.delete('/blog',tags=['blogs'])
 def delete(id,db:Session=Depends(get_db)):
     blog=db.query(models.Blog).where(models.Blog.id==id)
     blog.delete()
@@ -64,7 +78,7 @@ def delete(id,db:Session=Depends(get_db)):
 # not working because update requires a dict and we are passing a model
 
 
-@app.put('/blog/{id}',status_code=status.HTTP_202_ACCEPTED)
+@app.put('/blog/{id}',status_code=status.HTTP_202_ACCEPTED,tags=['blogs'])
 def update(id,request:schemas.Blog,db:Session=Depends(get_db)):
     blog=db.query(models.Blog).filter(models.Blog.id==id)
     if not blog.first():
@@ -81,7 +95,15 @@ def update(id,request:schemas.Blog,db:Session=Depends(get_db)):
 # UPDATE failed because it needs data — and you gave it the wrong kind.
 
 
+@app.post('/user',tags=['users'])
+def create_user(request:schemas.User,db:Session=Depends(get_db)):
+    hashedpassword=pwd_cxt.hash(request.password)
+    user=models.Users(name=request.name,email=request.email,password=hashedpassword)
 
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
 
 
 
