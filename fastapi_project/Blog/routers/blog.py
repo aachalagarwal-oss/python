@@ -1,26 +1,26 @@
 from fastapi import APIRouter,Depends,HTTPException,status
 from .. import schemas,database,models
 from sqlalchemy.orm import Session
-router=APIRouter()
+from ..repository import blog
+from ..repository import user
+
 get_db=database.get_db
 
-@router.get('/blog',tags=['blogs'])
+router=APIRouter(
+    prefix="/blog",
+    tags=['blog']
+)
+
+
+@router.get('/')
 def all(db:Session=Depends(database.get_db)):
-    blogs=db.query(models.Blog).all()
-    return blogs
-
-
-
-
+    return blog.get_all(db)
 # blogs=db.query(models.Blog)---just a blueprint
 # .all():executes the SQL query
 
 # to get dynamic values
 
-
-
-
-@router.get('/blog/{id}', response_model=schemas.showBlog,tags=['blogs'])
+@router.get('/{id}', response_model=schemas.showBlog)
 def show(id: int, db: Session = Depends(database.get_db)):
     blog = db.query(models.Blog).filter(models.Blog.id == id).first()
 
@@ -32,37 +32,22 @@ def show(id: int, db: Session = Depends(database.get_db)):
 
     return blog
 
-
-@router.post('/blog',status_code=status.HTTP_200_OK,tags=['blogs'])
+@router.post('/',status_code=status.HTTP_200_OK)
 def create(request:schemas.Blog,db:Session=Depends(get_db)):
-    new_blog=models.Blog(title=request.title,body=request.body,user_id=request.user_id)
-    db.add(new_blog)
-    db.commit()
-    db.refresh(new_blog)
-    return new_blog
+    return blog.create(request,db)
 
-
-@router.put('/blog/{id}',status_code=status.HTTP_202_ACCEPTED,tags=['blogs'])
-def update(id,request:schemas.Blog,db:Session=Depends(get_db)):
-    blog=db.query(models.Blog).filter(models.Blog.id==id)
-    if not blog.first():
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
-    blog.update(request.dict())
-
-#    .dict() because:SQLAlchemy works with plain Python data (dicts),Pydantic works with Python objects (models).
-
-    db.commit()
-    return 'updated'
+@router.put('/{id}',status_code=status.HTTP_202_ACCEPTED)
+def update(id:int,request:schemas.Blog,db:Session=Depends(get_db)):
+   return blog.update(id,request,db)
 
 # without .dict()
 # DELETE worked because it needs no data.
 # UPDATE failed because it needs data — and you gave it the wrong kind.
 
+@router.delete('/')
+def delete(id:int,db:Session=Depends(get_db)):
+    blog.delete(id,db)
 
 
-@router.delete('/blog',tags=['blogs'])
-def delete(id,db:Session=Depends(get_db)):
-    blog=db.query(models.Blog).where(models.Blog.id==id)
-    blog.delete()
-    db.commit()
-    return 'done'
+
+
