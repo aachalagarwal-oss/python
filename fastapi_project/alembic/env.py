@@ -5,6 +5,13 @@ from sqlalchemy import pool
 
 from alembic import context
 
+import sys
+from pathlib import Path
+
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
+
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -21,6 +28,12 @@ if config.config_file_name is not None:
 from Blog.database import Base
 from Blog import models  # IMPORTANT: import models
 target_metadata = Base.metadata
+
+
+from sqlmodel import SQLModel
+from Pratical4 import models
+
+target_metadata = SQLModel.metadata
 
 
 # other values from the config, defined by the needs of env.py,

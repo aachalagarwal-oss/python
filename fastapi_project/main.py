@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from typing import Optional
 from pydantic import BaseModel
+import API_KEY_GUARD 
 app = FastAPI()
 
 class Blog(BaseModel):
@@ -15,6 +16,8 @@ def create_blog(request:Blog):
 
 
 
+
+app.include_router(API_KEY_GUARD.router)
 
 
 

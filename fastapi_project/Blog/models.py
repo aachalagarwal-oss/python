@@ -10,7 +10,7 @@ class Blog(Base):
     title=Column(String)
     body=Column(String)
     user_id=Column(Integer,ForeignKey('users.id'))
-    creator=relationship("Users",back_populates="blogs")
+
 
 
 class Users(Base):
@@ -19,5 +19,4 @@ class Users(Base):
     name=Column(String)
     email=Column(String)
     password=Column(String)
-    blogs=relationship("Blog",back_populates="creator")
-    
+    blogs=relationship("Blog",backref="users")
