@@ -16,17 +16,21 @@ async def shutdown_event():
     app.state.redis.close()
 
 
-@app.get('/entries')
+@app.get('/trending')
 async def read_item():
-    value=app.state.redis.get('entries')
+    cached=app.state.redis.get('entries')
 
-    if value is None:
-        response=await app.state.http_client.get('https://www.freepublicapis.com/api/apis?limit=10&sort=best')
-        value=response.json()
-        data_str=json.dumps(value)
-        app.state.redis.set("entries",data_str)
-   
-    return json.loads(value)
+    if cached:
+        return json.loads(cached)
+
+    if cached is None:
+        response=await app.state.http_client.get('https://jsonplaceholder.typicode.com/comments')
+        cached=response.json()
+        data_str=json.dumps(cached)
+        app.state.redis.set("entries",data_str,ex=60)
+
+
+    return data_str
 
 
 
