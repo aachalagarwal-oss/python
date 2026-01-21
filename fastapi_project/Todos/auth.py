@@ -16,6 +16,7 @@ from . import database
 from .Hashing import pwd_cxt
 
 
+
 router=APIRouter(
     prefix='/auth',
     tags=['auth']

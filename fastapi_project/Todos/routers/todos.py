@@ -76,10 +76,6 @@ def show(user:user_dependency,todo_id: int, db: Session = Depends(database.get_d
     
 
 
-
-
-
-
 @router.put('/todos/{todo_id}',response_model=schemas.response_todo)
 def update(user:user_dependency,todo_id:int,request:schemas.update_todo,db: Session = Depends(database.get_db)):
    todo=db.query(models.Todo).filter(
