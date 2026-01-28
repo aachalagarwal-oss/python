@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-
+from typing import Optional
 from enum import Enum
 
 class TaskStatus(str,Enum):
@@ -13,6 +13,7 @@ class create_tasks(BaseModel):
     description:str
     status:TaskStatus=TaskStatus.pending
     priority:int
+    
 
 
 class create_user(BaseModel):
@@ -28,3 +29,7 @@ class create_subtasks(BaseModel):
     is_done:bool=False
     priority:int
 
+class TaskResponse(BaseModel):
+    title:str
+    description:str
+    status: Optional[TaskStatus] = None

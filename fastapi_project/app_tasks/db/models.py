@@ -5,6 +5,16 @@ from sqlalchemy import event
 from sqlalchemy.engine import Engine
 import sqlite3
 
+from enum import Enum as Enum
+from fastapi import Query
+from sqlalchemy import Enum as SQLEnum          
+
+
+class Status(str,Enum):
+    PENDING = 'pending'
+    IN_PROGRESS = 'in_progress'
+    COMPLETED = 'completed'
+
 class User(Base):
     __tablename__="user"
     user_id=Column(Integer,primary_key=True,index=True)
@@ -15,10 +25,11 @@ class User(Base):
 
 class Task(Base):
     __tablename__="task"
+    __allow_unmapped__ = True
     tasks_id=Column(Integer,primary_key=True,index=True)
     title=Column(String)
     description=Column(String)
-    status=Column(Enum("pending","in_progress","completed"))
+    status = Column(String)
     priority=Column(Integer)
     user_id=Column(Integer,ForeignKey('user.user_id'))
     subTasks=relationship("subTasks",backref="Task")

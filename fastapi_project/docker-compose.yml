@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+
+  web:
+    build: .
+    command: uvicorn app_tasks.main:app --host 0.0.0.0 --port 8000 
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - redis
+    environment:
+      - REDIS_HOST=redis
+      # “Inside the container, create an env variable REDIS_HOST with value redis”
+      - REDIS_PORT=6379
+
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
