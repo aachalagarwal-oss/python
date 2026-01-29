@@ -8,6 +8,9 @@ from app_tasks.db.models import User
 from .utils import pwd_cxt
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
+from app_tasks.auth.config import settings
+
+
 
 router=APIRouter(
     prefix='/login',
@@ -15,9 +18,8 @@ router=APIRouter(
 )
 
 
-SECRET_KEY ="09d25e094faa6ca2556c818166b7a9563b93f7099f6f0f4caa6cf63b88e8d3e7"
-ALGORITHM = "HS256"
-
+SECRET_KEY = settings.SECRET_KEY
+ALGORITHM = settings.ALGORITHM
 #OAuth 2.0 is an authorization framework, while a Bearer Token is a type of access token often used within OAuth 2.0
 
 oauth2_bearer=OAuth2PasswordBearer(tokenUrl="login")

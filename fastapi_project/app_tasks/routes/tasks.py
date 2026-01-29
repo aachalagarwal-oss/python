@@ -12,6 +12,11 @@ from time import perf_counter
 from typing import Optional,List
 from app_tasks.db.models import Status
 from app_tasks.auth.schemas import TaskResponse
+import os
+from dotenv import load_dotenv
+
+import redis
+
 
 
 
@@ -25,11 +30,14 @@ get_db=database.get_db
 user_dependency=Annotated[dict,Depends(get_current_user)]
 
 
+
+load_dotenv()
 # Connect to Redis
-redis_client = redis.Redis(host='localhost', port=6379, db=0)
-
-
-
+redis_client = redis.Redis(
+    host=os.getenv('REDIS_HOST'), 
+    port=int(os.getenv('REDIS_PORT')), 
+    db=int(os.getenv('REDIS_DB'))
+)
 
 
 
@@ -237,3 +245,4 @@ def update(id:int,user:user_dependency,db:Session=Depends(get_db)):
 
  
 
+   
